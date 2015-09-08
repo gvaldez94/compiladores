@@ -1,0 +1,20 @@
+[ "data",
+  [ "table",
+    { "id" : "persona" },
+    [ "column",
+      { "id" : "ci" },
+      "1495256"
+    ],
+    [ "column",
+      { "id" : "nombre" },
+      "Juan Perez"
+    ]
+    [ "column",
+      { "ruc" : "num" },
+    ]
+  ],
+  [ "sql",
+    { "id" : "select_all" },
+    "select * from persona order by ci"
+  ]
+]
