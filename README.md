@@ -1,1 +1,3 @@
-# compiladores
+# Compiladores
+
+Analizador léxico para JsonML.
