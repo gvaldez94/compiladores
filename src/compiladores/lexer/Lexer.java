@@ -310,6 +310,7 @@ public class Lexer {
 		if (c == (char) -1) {
 			lista.add(token = new Token("EOF", "EOF", EOF, nroLinea));
 		}
+		System.out.println("Linea: " + nroLinea + "\t compLex: " +  token.compLex);
 	}
 
 	public static void msgError(String msg) {
