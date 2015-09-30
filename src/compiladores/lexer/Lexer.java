@@ -83,17 +83,14 @@ public class Lexer {
 			for (Token t : lista) {
 				if (t.nroLinea == nroLineaAux) {
 					pw.print(t.compLex + " ");
-					// System.out.print(t.compLex + " ");
 				} else {
 					pw.print("\n" + t.compLex + " ");
 					nroLineaAux = t.nroLinea;
-					// System.out.println(t.compLex + " ");
 				}
 			}
 
 		} catch (Exception e) {
-			// e.printStackTrace();
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		} finally {
 			try {
 				if (fwriter != null)
@@ -107,6 +104,41 @@ public class Lexer {
 		entrada.close();
 	}
 
+	
+	public static LinkedList<Token> iniciarLexer(){
+        Scanner in = new Scanner(System.in);
+        FileReader freader = null;
+        File path = null;
+        
+        do{
+            System.out.print("Ingrese la ruta del archivo: ");
+            path = new File(in.nextLine());
+        }while(!path.canRead());
+        
+        try {
+            freader = new FileReader(path);
+            archivo = new Buffer(freader);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        in.close();
+        return lista;
+    }
+    
+    public static void cerrarArchivo(){
+     try {
+            if(fwriter != null)
+                fwriter.close();
+            if(freader != null)
+                freader.close();
+            if(archivo != null)
+                archivo.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+	
+	
 	// obtiene todos los tokens
 	public static void getToken() throws IOException {
 		char c;
@@ -310,7 +342,7 @@ public class Lexer {
 		if (c == (char) -1) {
 			lista.add(token = new Token("EOF", "EOF", EOF, nroLinea));
 		}
-		System.out.println("Linea: " + nroLinea + "\t compLex: " +  token.compLex);
+		//System.out.println("Linea: " + nroLinea + "\t compLex: " +  token.compLex);
 	}
 
 	public static void msgError(String msg) {
