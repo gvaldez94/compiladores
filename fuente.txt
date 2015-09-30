@@ -9,9 +9,6 @@
       { "id" : "nombre" },
       "Juan Perez"
     ]
-    [ "column",
-      { "ruc" : "num" },
-    ]
   ],
   [ "sql",
     { "id" : "select_all" },
