@@ -36,6 +36,7 @@ public class Parser {
 
 	public static void main(String[] args) {
         tokenList = Lexer.iniciarLexer();
+        Lexer.setPrList();
         getToken();
         element(new int[]{EOF});
         Lexer.cerrarArchivo();
