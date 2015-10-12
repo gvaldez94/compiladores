@@ -38,7 +38,8 @@ public class Parser {
         tokenList = Lexer.iniciarLexer();
         Lexer.setPrList();
         getToken();
-        element(new int[]{EOF});
+        //element(new int[]{EOF});
+        element();
         Lexer.cerrarArchivo();
         if(aceptar)
             System.out.println("Sin errores sintacticos");
@@ -118,6 +119,153 @@ public class Parser {
         return false;
     }
 	
+    
+    static void element(){
+    	System.out.println("Metodo element");
+    	switch (token.id){
+    	case L_CORCHETE:
+    		match(L_CORCHETE);
+    		tagname();
+    		if (token.id == COMA) match(COMA);
+    		if (token.id == L_LLAVE) attributes();
+    		if (token.id == COMA) match(COMA);
+    		if (token.id == L_CORCHETE || token.id == LITERAL_CADENA) elementList();
+    		match(R_CORCHETE);
+    		break;
+    	case LITERAL_CADENA:
+    		match(LITERAL_CADENA);
+    		break;
+    	default:
+    		System.out.println("Error de element");
+    		error();
+    	}
+    }
+    
+    static void tagname(){
+    	System.out.println("Metodo tagname");
+    	switch (token.id){
+    	case LITERAL_CADENA:
+    		match(LITERAL_CADENA);
+    		break;
+    	default:
+    		System.out.println("Error de tagname");
+    		error();
+    	}
+    }
+    
+    static void attributes(){
+    	System.out.println("Metodo attributes");
+    	switch(token.id){
+    	case L_LLAVE:
+    		match(L_LLAVE);
+    		attributeList();
+    		match(R_LLAVE);
+    		break;
+    	default:
+    		System.out.println("Error de attributes");
+    		error();
+    	}
+    }
+    
+    static void attributeList(){
+    	System.out.println("Metodo attributeList");
+    	switch(token.id){
+    	case LITERAL_CADENA:
+    		attribute();
+    		attribP();
+    		break;
+    	default:
+    		System.out.println("Error de attributeList");
+    		error();
+    	}
+    }
+    
+    static void attribP(){
+    	System.out.println("Metodo attribP");
+    	switch(token.id){
+    	case COMA:
+    		match(COMA);
+    		attributeList();
+    		attribP();
+    		break;
+    	}
+    }
+    
+    static void attribute(){
+    	System.out.println("Metodo attribute");
+    	switch(token.id){
+    	case LITERAL_CADENA:
+    		attributeName();
+    		match(DOS_PUNTOS);
+    		attributeValue();
+    		break;
+    	default:
+    		System.out.println("Error de attribute");
+    		error();
+    	}
+    }
+    
+    static void attributeName(){
+    	System.out.println("Metodo attributeName");
+    	if (token.id == LITERAL_CADENA){
+    		match(LITERAL_CADENA);
+    	}
+    	else {
+    		System.out.println("Error de attributeName");
+    		error();
+    	}
+    }
+    
+    static void attributeValue(){
+    	System.out.println("Metodo attributeValue");
+    	switch(token.id){
+    	case LITERAL_CADENA:
+    		match(LITERAL_CADENA);
+    		break;
+    	case LITERAL_NUM:
+    		match(LITERAL_NUM);
+    		break;
+    	case PR_TRUE:
+    		match(PR_TRUE);
+    		break;
+    	case PR_FALSE:
+    		match(PR_FALSE);
+    		break;
+    	case PR_NULL:
+    		match(PR_NULL);
+    		break;
+    	default:
+    		System.out.println("Error de attributeValue");
+    		error();
+    	}
+    }
+    
+    static void elementList(){
+    	System.out.println("Metodo elementList");
+    	switch(token.id){
+    	case L_CORCHETE:
+    		element();
+    		eleListP();
+    		break;
+    	case LITERAL_CADENA:
+    		element();
+    		eleListP();
+    		break;
+    	default:
+    		System.out.println("Error de elementList");
+    		error();
+    	}
+    }
+    
+    static void eleListP(){
+    	System.out.println("Metodo eleListP");
+    	if (token.id == COMA){
+    		match(COMA);
+    		elementList();
+    		eleListP();
+    	}
+    }
+    /*
     static void element(int[] synchset){
         //                  conjunto primero              EOF
         checkinput(new int[]{L_CORCHETE,LITERAL_CADENA}, synchset);
@@ -321,4 +469,5 @@ public class Parser {
             checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
         }
     }
+    */
 }
