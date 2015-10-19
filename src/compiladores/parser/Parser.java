@@ -200,6 +200,7 @@ public class Parser {
 
 	static void attribP(int[] synchset) {
 		// System.out.println("Metodo attribP");
+		checkinput(union(new int[] { COMA }, synchset), new int[] {});
 		if (!(in(synchset))) {
 			switch (token.id) {
 			case COMA:
@@ -209,6 +210,7 @@ public class Parser {
 				break;
 			}
 		}
+		checkinput(synchset, new int[] { COMA });
 	}
 
 	static void attribute(int[] synchset) {
@@ -294,6 +296,7 @@ public class Parser {
 
 	static void eleListP(int[] synchset) {
 		// System.out.println("Metodo eleListP");
+		checkinput(union(new int[] { COMA }, synchset), new int[] {});
 		if (!(in(synchset))) {
 			if (token.id == COMA) {
 				match(COMA);
@@ -301,5 +304,6 @@ public class Parser {
 				eleListP(new int[] { R_CORCHETE });
 			}
 		}
+		checkinput(synchset, new int[] { COMA });
 	}
 }
