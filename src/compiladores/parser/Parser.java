@@ -66,7 +66,7 @@ public class Parser {
 	static void error() {
 		System.out.println("Error de sintaxis en linea " + Lexer.nroLinea + " no se esperaba " + token);
 		aceptar = false;
-		if (token.id == EOF)// esto evita que se produzacan llamadas recursivas
+		if (token.id == EOF)// esto evita que se produzcan llamadas recursivas
 							// infinitas en ciertos casos de error
 			System.exit(0);
 	}
@@ -119,7 +119,7 @@ public class Parser {
 	}
 
 	static void element(int[] synchset) {
-		// System.out.println("Metodo element");
+		//System.out.println("Metodo element");
 		checkinput(new int[] { L_CORCHETE, LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -148,7 +148,7 @@ public class Parser {
 	}
 
 	static void tagname(int[] synchset) {
-		// System.out.println("Metodo tagname");
+		//System.out.println("Metodo tagname");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -159,12 +159,12 @@ public class Parser {
 				System.out.println("Error de tagname");
 				error();
 			}
+			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
-		checkinput(synchset, new int[] { LITERAL_CADENA });
 	}
 
 	static void attributes(int[] synchset) {
-		// System.out.println("Metodo attributes");
+		//System.out.println("Metodo attributes");
 		checkinput(new int[] { L_LLAVE }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -177,12 +177,12 @@ public class Parser {
 				// System.out.println("Error de attributes");
 				error();
 			}
+			checkinput(synchset, new int[] { L_LLAVE });
 		}
-		checkinput(synchset, new int[] { L_LLAVE });
 	}
 
 	static void attributeList(int[] synchset) {
-		// System.out.println("Metodo attributeList");
+		//System.out.println("Metodo attributeList");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -199,7 +199,7 @@ public class Parser {
 	}
 
 	static void attribP(int[] synchset) {
-		// System.out.println("Metodo attribP");
+		//System.out.println("Metodo attribP");
 		checkinput(union(new int[] { COMA }, synchset), new int[] {});
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -209,12 +209,12 @@ public class Parser {
 				attribP(new int[] { COMA, R_LLAVE });
 				break;
 			}
+			checkinput(synchset, new int[] { COMA });
 		}
-		checkinput(synchset, new int[] { COMA });
 	}
 
 	static void attribute(int[] synchset) {
-		// System.out.println("Metodo attribute");
+		//System.out.println("Metodo attribute");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -232,7 +232,7 @@ public class Parser {
 	}
 
 	static void attributeName(int[] synchset) {
-		// System.out.println("Metodo attributeName");
+		//System.out.println("Metodo attributeName");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			if (token.id == LITERAL_CADENA) {
@@ -246,7 +246,7 @@ public class Parser {
 	}
 
 	static void attributeValue(int[] synchset) {
-		// System.out.println("Metodo attributeValue");
+		//System.out.println("Metodo attributeValue");
 		checkinput(new int[] { LITERAL_CADENA, LITERAL_NUM, PR_TRUE, PR_FALSE, PR_NULL }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -274,7 +274,7 @@ public class Parser {
 	}
 
 	static void elementList(int[] synchset) {
-		// System.out.println("Metodo elementList");
+		//System.out.println("Metodo elementList");
 		checkinput(new int[] { L_CORCHETE, LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -295,7 +295,7 @@ public class Parser {
 	}
 
 	static void eleListP(int[] synchset) {
-		// System.out.println("Metodo eleListP");
+		//System.out.println("Metodo eleListP");
 		checkinput(union(new int[] { COMA }, synchset), new int[] {});
 		if (!(in(synchset))) {
 			if (token.id == COMA) {
@@ -303,7 +303,7 @@ public class Parser {
 				elementList(new int[] { R_CORCHETE });
 				eleListP(new int[] { R_CORCHETE });
 			}
+			checkinput(synchset, new int[] { COMA });
 		}
-		checkinput(synchset, new int[] { COMA });
 	}
 }
