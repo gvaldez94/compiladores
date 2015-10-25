@@ -38,7 +38,7 @@ public class Parser {
 		tokenList = Lexer.iniciarLexer();
 		Lexer.setPrList();
 		getToken();
-		element(new int[] { EOF });
+		element(new int[] { EOF, R_CORCHETE });
 		Lexer.cerrarArchivo();
 		if (aceptar)
 			System.out.println("Sin errores sintacticos");
