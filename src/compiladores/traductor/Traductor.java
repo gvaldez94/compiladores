@@ -48,7 +48,7 @@ public class Traductor {
         
         Lexer.iniciarLexer();
         path = Lexer.path;//el fuente xml se envia al mismo directorio del archivo json
-        System.out.println(path);
+        //System.out.println(path);
         getToken();
         traduccion = element(new int[]{EOF});
         Lexer.cerrarArchivo();
