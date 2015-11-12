@@ -108,7 +108,7 @@ public class Lexer {
 	public static LinkedList<Token> iniciarLexer(){
         Scanner in = new Scanner(System.in);
         FileReader freader = null;
-        File path = null;
+        //File path = null;
         
         do{
             System.out.print("Ingrese la ruta del archivo: ");
