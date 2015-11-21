@@ -61,7 +61,7 @@ public class Traductor {
     			else if (os.isUnix() || os.isMac())
     				fwriter = new FileWriter(path.getParent()+"/out.xml");
                 pw = new PrintWriter(fwriter);
-                pw.print("<?xml version = \"1.0\" encoding=\"UTF-8\"?>"+traduccion);
+                pw.print("<?xml version = \"1.0\" encoding=\"UTF-8\"?>\n"+traduccion);
             } catch (IOException ex) {
                 Logger.getLogger(Traductor.class.getName()).log(Level.SEVERE, null, ex);
             }finally{
@@ -77,74 +77,79 @@ public class Traductor {
         
     }
     
-    /*asigna un nuevo token en la variable global token*/
-    static void getToken(){
-        do{
-            try 
-            {
-                Lexer.getToken();
-                token = Lexer.token;
-            } catch (IOException ex) {
-                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }while (token.id==ERROR);
-    }
-    
-    static void match(int tokenEsperado){
-        if (token.id==tokenEsperado){
-            getToken();
-        }
-        else{
-            error();
-        }
-    }
+    static void getToken() {
+		do {
+			try {
+				Lexer.getToken();
+				token = Lexer.token;
+			} catch (IOException ex) {
+				Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} while (token.id == ERROR);
+	}
 
-    static void error() {
-        System.out.println("error de sintaxis en linea "+Lexer.nroLinea+" no se esperaba "+token);
-        acepto=-1;
-        if (token.id==EOF)
-            System.exit(0);
-    }
-    
-    static void checkinput(int[] firsts, int[] follows){
-        if(!(in(firsts))){
-            error();
-            scanto(union(firsts, follows));
-        }
-    }
-    
-    static int[] union(int[] array1, int[] array2){
-        int[] array3 = new int[array1.length+array2.length];
-        int i = 0;
-        for (int s : array1) {
-            array3[i] = s;
-            i++;
-        }
-        for (int s : array2) {
-            array3[i] = s;
-            i++;
-        }
-        return array3;
-    }
-    
-    static void scanto (int[] synchset){ 
-        int consumidos = 0;
-        while(!(in(synchset) || token.id==EOF)){
-            getToken();
-            consumidos++;
-        }
-        
-        System.out.println("se comsumieron "+consumidos+" tokens");
-    }
-    
-    static boolean in(int[] array){
-        for (int s : array) {
-            if(token.id==s){
-               return true;
-            } 
-        }
-        return false;
-    }
+	static void match(int tokenEsperado) {
+		if (token.id == tokenEsperado) {
+			getToken();
+		} else {
+			error();
+		}
+	}
+
+	static void error() {
+		System.out.println("Error de sintaxis en linea " + Lexer.nroLinea + " no se esperaba " + token);
+		acepto = 1;
+		if (token.id == EOF)// esto evita que se produzcan llamadas recursivas
+							// infinitas en ciertos casos de error
+			System.exit(0);
+	}
+
+	static void checkinput(int[] firsts, int[] follows) {
+		if (!(in(firsts))) {
+			error();
+			scanto(union(firsts, follows));
+		}
+	}
+
+	/*
+	 * funcion union devuelve un array de tokens que contiene todos los tokens
+	 * del conjunto1 y el conjunto2
+	 */
+	static int[] union(int[] conjunto1, int[] conjunto2) {
+		int[] conjunto3 = new int[conjunto1.length + conjunto2.length];
+		int i = 0;
+		for (int s : conjunto1) {
+			conjunto3[i] = s;
+			i++;
+		}
+		for (int s : conjunto2) {
+			conjunto3[i] = s;
+			i++;
+		}
+		return conjunto3;
+	}
+
+	static void scanto(int[] synchset) {
+		int consumidos = 0;// indica cuantos token se cosumieron hasta alcanzar
+							// un token de sincronizacion
+		while (!(in(synchset) || token.id == EOF)) {
+			getToken();
+			consumidos++;
+		}
+		System.out.println("Se consumieron " + consumidos + " tokens");
+	}
+
+	/*
+	 * funcion in devuelve true si el token actual se encuentra en el conjunto
+	 */
+	static boolean in(int[] conjunto) {
+		for (int s : conjunto) {
+			if (token.id == s) {
+				return true;
+			}
+		}
+		return false;
+	}
     
     static String sinComillas(String c){
         c = c.substring(1, c.length()-1);
