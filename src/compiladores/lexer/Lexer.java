@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Scanner;
 import static java.lang.Character.isDigit;
 import compiladores.lexer.OSDetect;
@@ -22,7 +22,7 @@ public class Lexer {
 	public static String cadena = ""; // representa a un literal obtenido del
 										// archivo
 	public static Token token = null;
-	public static LinkedList<Token> lista = new LinkedList<Token>();
+	public static ArrayList<Token> lista = new ArrayList<Token>();
 
 	public static Token[] prList = new Token[3]; // tres palabras reservadas
 
@@ -80,7 +80,9 @@ public class Lexer {
 			fwriter = new FileWriter(outputPath);
 			pw = new PrintWriter(fwriter);
 			int nroLineaAux = 1;
+			System.out.println("Tamanho de lista> " + lista.size());
 			for (Token t : lista) {
+				System.out.println(t.compLex + " " + t.id);
 				if (t.nroLinea == nroLineaAux) {
 					pw.print(t.compLex + " ");
 				} else {
@@ -104,41 +106,39 @@ public class Lexer {
 		entrada.close();
 	}
 
-	
-	public static LinkedList<Token> iniciarLexer(){
-        Scanner in = new Scanner(System.in);
-        FileReader freader = null;
-        //File path = null;
-        
-        do{
-            System.out.print("Ingrese la ruta del archivo: ");
-            path = new File(in.nextLine());
-        }while(!path.canRead());
-        
-        try {
-            freader = new FileReader(path);
-            archivo = new Buffer(freader);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        in.close();
-        return lista;
-    }
-    
-    public static void cerrarArchivo(){
-     try {
-            if(fwriter != null)
-                fwriter.close();
-            if(freader != null)
-                freader.close();
-            if(archivo != null)
-                archivo.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-	
-	
+	public static ArrayList<Token> iniciarLexer() {
+		Scanner in = new Scanner(System.in);
+		FileReader freader = null;
+		// File path = null;
+
+		do {
+			System.out.print("Ingrese la ruta del archivo: ");
+			path = new File(in.nextLine());
+		} while (!path.canRead());
+
+		try {
+			freader = new FileReader(path);
+			archivo = new Buffer(freader);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		in.close();
+		return lista;
+	}
+
+	public static void cerrarArchivo() {
+		try {
+			if (fwriter != null)
+				fwriter.close();
+			if (freader != null)
+				freader.close();
+			if (archivo != null)
+				archivo.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	// obtiene todos los tokens
 	public static void getToken() throws IOException {
 		char c;
@@ -323,7 +323,9 @@ public class Lexer {
 						}
 						acepto = true;
 						lista.add(token = new Token("LITERAL_NUM", cadena, LITERAL_NUM, nroLinea));
-						break;
+						return; // BUG: no se agrega a la lista
+								// se sale de la maquina para agregar el
+								// elemento
 					case -1:
 						if (c == (char) -1) {
 							msgError("No se esperaba fin de archivo");
@@ -335,14 +337,16 @@ public class Lexer {
 						return;
 					} // fin switch
 				}
+				// System.out.println("Tamanho de lista> " + lista.size());
 			} else {
 				msgError("Caracter no valido " + c);
 			}
+			// System.out.println("Tamanho de lista> " + lista.size());
 		}
 		if (c == (char) -1) {
 			lista.add(token = new Token("EOF", "EOF", EOF, nroLinea));
 		}
-		//System.out.println("Linea: " + nroLinea + "\t compLex: " +  token.compLex);
+		//System.out.println("Linea: " + nroLinea + "\t compLex: " + token.compLex);
 	}
 
 	public static void msgError(String msg) {
@@ -351,8 +355,8 @@ public class Lexer {
 	}
 
 	public static void setPrList() {
-		prList[0] = new Token("PR_TRUE", "TRUE", 9, 0);
-		prList[1] = new Token("PR_FALSE", "FALSE", 10, 0);
-		prList[2] = new Token("PR_NULL", "NULL", 11, 0);
+		prList[0] = new Token("PR_TRUE", "TRUE", PR_TRUE, 0);
+		prList[1] = new Token("PR_FALSE", "FALSE", PR_FALSE, 0);
+		prList[2] = new Token("PR_NULL", "NULL", PR_NULL, 0);
 	}
 }
