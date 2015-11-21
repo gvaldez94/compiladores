@@ -1,7 +1,6 @@
 package compiladores.parser;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +16,6 @@ import compiladores.lexer.Token;
 public class Parser {
 	static boolean aceptar = true;
 	static Token token = new Token(null, null, -1, -1);
-	static LinkedList<Token> tokenList = null;
 
 	// codigos
 	public static final int L_CORCHETE = 256;
@@ -35,10 +33,11 @@ public class Parser {
 	public static final int ERROR = -1;
 
 	public static void main(String[] args) {
-		tokenList = Lexer.iniciarLexer();
+		Lexer.iniciarLexer();
 		Lexer.setPrList();
+
 		getToken();
-		element(new int[] { EOF, R_CORCHETE });
+		element(new int[] { EOF });
 		Lexer.cerrarArchivo();
 		if (aceptar)
 			System.out.println("Sin errores sintacticos");
@@ -120,6 +119,7 @@ public class Parser {
 
 	static void element(int[] synchset) {
 		// conjunto primero EOF
+		//System.out.println("Entra a element");
 		checkinput(new int[] { L_CORCHETE, LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -137,40 +137,46 @@ public class Parser {
 			}
 			checkinput(synchset, new int[] { L_CORCHETE, LITERAL_CADENA });
 		}
+		//System.out.println("Sale de element");
 	}
 
 	static void tagname(int[] synchset) {
+		//System.out.println("Entra a tagname");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			match(LITERAL_CADENA);
 		}
 		checkinput(synchset, new int[] { LITERAL_CADENA });
+		//System.out.println("Sale de tagname");
 	}
 
 	private static void aux(int[] synchset) {
 		// un caso especial son las funciones que pueden tomar vacio:
 		// es valido que venga la coma o que venga algo de su conjunto siguiente
+		//System.out.println("Entra a aux");
 		checkinput(union(new int[] { COMA }, synchset), new int[] {});
 		if (!(in(synchset))) {
 			match(COMA);
 			aux2(new int[] { R_CORCHETE });
 			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
+		//System.out.println("Sale de aux");
 	}
 
 	private static void aux2(int[] synchset) {
+		//System.out.println("Entra a aux2");
 		checkinput(new int[] { L_LLAVE, L_CORCHETE, LITERAL_CADENA }, synchset);
 		if (!in(synchset)) {
 			switch (token.id) {
 			case L_LLAVE:
-				atributes(new int[] { COMA, R_CORCHETE });
+				attributes(new int[] { COMA, R_CORCHETE });
 				aux3(new int[] { R_CORCHETE });
 				break;
 			case L_CORCHETE:
-				elementlist(new int[] { R_CORCHETE });
+				elementList(new int[] { R_CORCHETE });
 				break;
 			case LITERAL_CADENA:
-				elementlist(new int[] { R_CORCHETE });// el corchete del element
+				elementList(new int[] { R_CORCHETE });// el corchete del element
 														// que le contiene
 				break;
 			default:
@@ -178,9 +184,11 @@ public class Parser {
 			}
 		}
 		checkinput(synchset, new int[] { L_LLAVE, L_CORCHETE, LITERAL_CADENA });
+		//System.out.println("Sale de aux2");
 	}
 
-	private static void atributes(int[] synchset) {
+	private static void attributes(int[] synchset) {
+		//System.out.println("Entra a attributes");
 		checkinput(new int[] { L_LLAVE }, synchset);
 		if (!in(synchset)) {
 			switch (token.id) {
@@ -194,18 +202,22 @@ public class Parser {
 			}
 		}
 		checkinput(synchset, new int[] { L_LLAVE });
+		//System.out.println("Sale de attributes");
 	}
 
 	private static void aux3(int[] synchset) {
+		//System.out.println("Entra a aux3");
 		checkinput(union(new int[] { COMA }, synchset), synchset);
 		if (!(in(synchset))) {
 			match(COMA);
-			elementlist(new int[] { R_CORCHETE });
+			elementList(new int[] { R_CORCHETE });
 			checkinput(synchset, new int[] { COMA });
 		}
+		//System.out.println("Sale de aux3");
 	}
 
-	private static void elementlist(int[] synchset) {
+	private static void elementList(int[] synchset) {
+		//System.out.println("Entra a elementList");
 		checkinput(new int[] { L_CORCHETE, LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
@@ -222,22 +234,26 @@ public class Parser {
 			}
 			checkinput(synchset, new int[] { L_CORCHETE, LITERAL_CADENA });
 		}
+		//System.out.println("Sale de elementList");
 	}
 
 	private static void aux7(int[] synchset) {
+		//System.out.println("Entra a aux7");
 		checkinput(union(new int[] { LITERAL_CADENA }, synchset), synchset);
 		if (!(in(synchset))) {
-			atributeslist(new int[] { R_LLAVE });
+			attributesList(new int[] { R_LLAVE });
 			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
+		//System.out.println("Sale de aux7");
 	}
 
-	private static void atributeslist(int[] synchset) {
+	private static void attributesList(int[] synchset) {
+		//System.out.println("Entra a attributesList");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
 			case LITERAL_CADENA:
-				atribute(new int[] { COMA, R_LLAVE });
+				attribute(new int[] { COMA, R_LLAVE });
 				aux4(new int[] { R_LLAVE });
 				break;
 			default:
@@ -245,9 +261,11 @@ public class Parser {
 			}
 			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
+		//System.out.println("Sale de attributesList");
 	}
 
 	private static void aux5(int[] synchset) {
+		//System.out.println("Entra a aux5");
 		checkinput(union(new int[] { COMA }, synchset), synchset);
 		if (!(in(synchset))) {
 			match(COMA);
@@ -255,36 +273,45 @@ public class Parser {
 			aux5(new int[] { R_CORCHETE });
 			checkinput(synchset, new int[] { COMA });
 		}
+		//System.out.println("Sale de aux5");
 	}
 
-	private static void atribute(int[] synchset) {
+	private static void attribute(int[] synchset) {
+		//System.out.println("Entra a attribute");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
 			case LITERAL_CADENA:
-				attribute_name(new int[] { DOS_PUNTOS });
+				attributeName(new int[] { DOS_PUNTOS });
+				//System.out.println("Token id> " + token.id + " Token lexema> " + token.lexema + " Token compLex> "+ token.compLex);
 				match(DOS_PUNTOS);
-				attribute_value(new int[] { COMA, R_LLAVE });
+				//System.out.println("Token id> " + token.id + " Token lexema> " + token.lexema + " Token compLex> "+ token.compLex);
+				attributeValue(new int[] { COMA, R_LLAVE });
 				break;
 			default:
 				error();
 			}
 			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
+		//System.out.println("Sale de attribute");
 	}
 
 	private static void aux4(int[] synchset) {
+		//System.out.println("Entra a aux4");
 		checkinput(union(new int[] { COMA }, synchset), new int[] {});
 		if (!(in(synchset))) {
 			match(COMA);
-			atribute(new int[] { COMA, R_LLAVE });
+			attribute(new int[] { COMA, R_LLAVE });
 			aux4(new int[] { R_LLAVE });
 			checkinput(synchset, new int[] { COMA });
 		}
+		//System.out.println("Sale de aux4");
 	}
 
-	private static void attribute_name(int[] synchset) {
+	private static void attributeName(int[] synchset) {
+		//System.out.println("Entra a attributename");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
+		//System.out.println("Token id> " + token.id + " Token lexema> " + token.lexema + " Token compLex> " + token.compLex);
 		if (!(in(synchset))) {
 			switch (token.id) {
 			case LITERAL_CADENA:
@@ -295,10 +322,14 @@ public class Parser {
 			}
 			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
+		//System.out.println("Sale de attributename");
 	}
 
-	private static void attribute_value(int[] synchset) {
+	private static void attributeValue(int[] synchset) {
+		//System.out.println("Entra a attributevalue");
+		//System.out.println("Token id> " + token.id + " Token lexema> " + token.lexema + " Token compLex> " + token.compLex);
 		checkinput(new int[] { LITERAL_CADENA, LITERAL_NUM, PR_TRUE, PR_FALSE, PR_NULL }, synchset);
+		//System.out.println("check");
 		if (!(in(synchset))) {
 			switch (token.id) {
 			case LITERAL_NUM:
@@ -314,6 +345,7 @@ public class Parser {
 				match(PR_FALSE);
 				break;
 			case PR_NULL:
+				System.out.println("Debe matchear con PR_NULL");
 				match(PR_NULL);
 				break;
 			default:
@@ -321,5 +353,6 @@ public class Parser {
 			}
 			checkinput(synchset, new int[] { LITERAL_CADENA, LITERAL_NUM, PR_TRUE, PR_FALSE, PR_NULL });
 		}
+		//System.out.println("Sale de attributevalue");
 	}
 }
