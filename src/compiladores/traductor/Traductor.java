@@ -21,7 +21,7 @@ import compiladores.parser.Parser;
 public class Traductor {
     static int index = -1;//usado para manejar la entrada
     static int acepto=0;//para mostrar mensaje de aceptado
-    static Token token  = new Token(null, null, -1, 0);//token actual
+    static Token token  = new Token(null, null, -1, -1);//token actual
     
     
     // codigos
