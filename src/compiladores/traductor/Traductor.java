@@ -47,6 +47,7 @@ public class Traductor {
         OSDetect os = new OSDetect();
         
         Lexer.iniciarLexer();
+        Lexer.setPrList();
         path = Lexer.path;//el fuente xml se envia al mismo directorio del archivo json
         //System.out.println(path);
         getToken();
@@ -210,25 +211,25 @@ public class Traductor {
     }
 
     static String aux2(int[] synchset) {
-        String atributesTrad = "";
+        String attributesTrad = "";
         String aux3Trad = "";
-        String elementlistTrad = "";
+        String elementListTrad = "";
         checkinput(new int[]{L_LLAVE, L_CORCHETE, LITERAL_CADENA }, synchset);
         if(!in(synchset)){
             switch(token.id){
                 case L_LLAVE:
-                    atributesTrad = atributes(new int[]{COMA, R_CORCHETE});
+                    attributesTrad = attributes(new int[]{COMA, R_CORCHETE});
                     aux3Trad = aux3(new int[]{R_CORCHETE});
                     checkinput(synchset, new int[]{L_LLAVE, L_CORCHETE, LITERAL_CADENA });
-                    return " "+atributesTrad+">"+aux3Trad;//aux2--> atributes aux3
+                    return " "+attributesTrad+">"+aux3Trad;//aux2--> attributes aux3
                 case L_CORCHETE:
-                    elementlistTrad = elementlist(new int[]{R_CORCHETE});
+                    elementListTrad = elementList(new int[]{R_CORCHETE});
                     checkinput(synchset, new int[]{L_LLAVE, L_CORCHETE, LITERAL_CADENA });
-                    return ">\n"+elementlistTrad;//aux2--> elementlist
+                    return ">\n"+elementListTrad;//aux2--> elementList
                 case LITERAL_CADENA:
-                    elementlistTrad = elementlist(new int[]{R_CORCHETE});//el corchete del element que le contiene
+                    elementListTrad = elementList(new int[]{R_CORCHETE});//el corchete del element que le contiene
                     checkinput(synchset, new int[]{L_LLAVE, L_CORCHETE, LITERAL_CADENA });
-                    return "\n"+elementlistTrad;//aux2--> elementlist
+                    return "\n"+elementListTrad;//aux2--> elementList
                 default:
                     error();
             }
@@ -237,7 +238,7 @@ public class Traductor {
         return "";//aqui se llega solo en caso de error de sintaxis
     }
 
-    static String atributes(int[]synchset) {
+    static String attributes(int[]synchset) {
         String aux7Trad = "";
         checkinput(new int[]{L_LLAVE}, synchset);
         if(!in(synchset)){
@@ -252,22 +253,22 @@ public class Traductor {
             }
         }
         checkinput(synchset, new int[]{L_LLAVE});
-        return aux7Trad;//atributes--> {aux7}
+        return aux7Trad;//attributes--> {aux7}
     }
 
     static String aux3(int[]synchset) {
-        String elementlistTrad = "";
+        String elementListTrad = "";
         checkinput(union(new int[]{COMA},synchset), synchset);
         if(!(in(synchset))){
             match(COMA);
-            elementlistTrad = elementlist(new int[]{R_CORCHETE});
+            elementListTrad = elementList(new int[]{R_CORCHETE});
             checkinput(synchset, new int[]{COMA});
-            return "\n"+elementlistTrad;//aux3--> ,elementlist
+            return "\n"+elementListTrad;//aux3--> ,elementList
         }
         return "";//aux3--> vacio
     }
 
-    static String elementlist(int[] synchset) {
+    static String elementList(int[] synchset) {
         String elementTrad = "";
         String aux5Trad = "";
         checkinput(new int[]{L_CORCHETE,LITERAL_CADENA}, synchset);
@@ -277,12 +278,12 @@ public class Traductor {
                     elementTrad = element(new int[]{COMA, R_CORCHETE});
                     aux5Trad = aux5(new int[]{R_CORCHETE});
                     checkinput(synchset, new int[]{L_CORCHETE,LITERAL_CADENA});
-                    return elementTrad+aux5Trad;//elementlist--> element aux5
+                    return elementTrad+aux5Trad;//elementList--> element aux5
                 case LITERAL_CADENA:
                     elementTrad = element(new int[]{COMA, R_CORCHETE});
                     aux5Trad = aux5(new int[]{R_CORCHETE});
                     checkinput(synchset, new int[]{L_CORCHETE,LITERAL_CADENA});
-                    return elementTrad+aux5Trad;//elementlist--> element aux5
+                    return elementTrad+aux5Trad;//elementList--> element aux5
                 default:
                     error();
             }
@@ -292,27 +293,27 @@ public class Traductor {
     }
 
     private static String aux7(int[] synchset) {
-        String atributeslistTrad = "";
+        String attributeListTrad = "";
         checkinput(union(new int[]{LITERAL_CADENA},synchset), synchset);
         if(!(in(synchset))){
-            atributeslistTrad = atributeslist(new int[]{R_LLAVE});
+            attributeListTrad = attributeList(new int[]{R_LLAVE});
             checkinput(synchset, new int[]{LITERAL_CADENA});
-            return atributeslistTrad;//aux7--> atributeslist
+            return attributeListTrad;//aux7--> attributeList
         }
         return "";//aux7--> vacio
     }
 
-    private static String atributeslist(int[] synchset) {
-        String atributeTrad = "";
+    private static String attributeList(int[] synchset) {
+        String attributeTrad = "";
         String aux4Trad = "";
         checkinput(new int[]{LITERAL_CADENA}, synchset);
         if(!(in(synchset))){
             switch(token.id){
                 case LITERAL_CADENA:
-                    atributeTrad = atribute(new int[]{COMA,R_LLAVE});
+                    attributeTrad = attribute(new int[]{COMA,R_LLAVE});
                     aux4Trad = aux4(new int[]{R_LLAVE});
                     checkinput(synchset, new int[]{LITERAL_CADENA});
-                    return atributeTrad+aux4Trad;//atributelist-->atribute aux4  
+                    return attributeTrad+aux4Trad;//attributelist-->attribute aux4  
                 default:
                     error();
             }
@@ -335,18 +336,18 @@ public class Traductor {
         return "";//aux5--> vacio
     }
 
-    private static String atribute(int[] synchset) {
-        String attribute_nameTrad = "";
-        String attribute_valueTrad = "";
+    private static String attribute(int[] synchset) {
+        String attributeNameTrad = "";
+        String attributeValueTrad = "";
         checkinput(new int[]{LITERAL_CADENA}, synchset);
         if(!(in(synchset))){
             switch(token.id){
                 case LITERAL_CADENA:
-                    attribute_nameTrad = attribute_name(new int[]{DOS_PUNTOS});
+                    attributeNameTrad = attributeName(new int[]{DOS_PUNTOS});
                     match(DOS_PUNTOS);
-                    attribute_valueTrad = attribute_value(new int[]{COMA,R_LLAVE});
+                    attributeValueTrad = attributeValue(new int[]{COMA,R_LLAVE});
                     checkinput(synchset, new int[]{LITERAL_CADENA});
-                    return attribute_nameTrad+" = "+attribute_valueTrad;//atribute--> attribute_name : attribuete_value
+                    return attributeNameTrad+" = "+attributeValueTrad;//attribute--> attributeName : attribuete_value
                 default:
                     error();
             }
@@ -356,20 +357,20 @@ public class Traductor {
     }
 
     private static String aux4(int[] synchset) {
-        String atributeTrad = "";
+        String attributeTrad = "";
         String aux4Trad = "";
         checkinput(union(new int[]{COMA},synchset), new int[]{});
         if(!(in(synchset))){
             match(COMA);
-            atributeTrad = atribute(new int[]{COMA,R_LLAVE});
+            attributeTrad = attribute(new int[]{COMA,R_LLAVE});
             aux4Trad = aux4(new int[]{R_LLAVE});
             checkinput(synchset, new int[]{COMA});
-            return " "+atributeTrad+aux4Trad;//aux4--> , atribute aux4
+            return " "+attributeTrad+aux4Trad;//aux4--> , attribute aux4
         }
         return "";//aux4--> vacio
     }
 
-    private static String attribute_name(int[] synchset) {
+    private static String attributeName(int[] synchset) {
         String cadena = "";
         checkinput(new int[]{LITERAL_CADENA}, synchset);
         if(!(in(synchset))){
@@ -387,7 +388,7 @@ public class Traductor {
         return "";//aqui se llega solo si ocurre un error de sintaxis
     }
 
-    private static String attribute_value(int[] synchset) {
+    private static String attributeValue(int[] synchset) {
         String cadena = "";
         checkinput(new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL}, synchset);
         if(!(in(synchset))){
@@ -396,24 +397,24 @@ public class Traductor {
                     cadena = token.lexema;
                     match(LITERAL_NUM);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return cadena;//attribute_value--> LITERAL_NUM
+                    return cadena;//attributeValue--> LITERAL_NUM
                 case LITERAL_CADENA:
                     cadena = token.lexema;
                     match(LITERAL_CADENA);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return cadena;//attribute_value--> LITERAL_CADENA
+                    return cadena;//attributeValue--> LITERAL_CADENA
                 case PR_TRUE:
                     match(PR_TRUE);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return "true";//attribute_value--> PR_TRUE
+                    return "true";//attributeValue--> PR_TRUE
                 case PR_FALSE:
                     match(PR_FALSE);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return "false";//attribute_value--> PR_FALSE
+                    return "false";//attributeValue--> PR_FALSE
                 case PR_NULL:
                     match(PR_NULL);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return " ";//attribute_value--> PR_NULL
+                    return " ";//attributeValue--> PR_NULL
                 default:
                     error();
             }
