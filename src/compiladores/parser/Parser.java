@@ -119,28 +119,20 @@ public class Parser {
 	}
 
 	static void element(int[] synchset) {
-		//System.out.println("Metodo element");
+		// conjunto primero EOF
 		checkinput(new int[] { L_CORCHETE, LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
 			case L_CORCHETE:
 				match(L_CORCHETE);
-				tagname(new int[] { COMA, R_CORCHETE });
-				if (token.id == COMA)
-					match(COMA);
-				if (token.id == L_LLAVE)
-					attributes(new int[] { COMA, R_CORCHETE });
-				if (token.id == COMA)
-					match(COMA);
-				if (token.id == L_CORCHETE || token.id == LITERAL_CADENA)
-					elementList(new int[] { R_CORCHETE });
+				tagname(new int[] { R_CORCHETE, COMA });
+				aux(new int[] { R_CORCHETE });
 				match(R_CORCHETE);
 				break;
 			case LITERAL_CADENA:
 				match(LITERAL_CADENA);
 				break;
 			default:
-				// System.out.println("Error de element");
 				error();
 			}
 			checkinput(synchset, new int[] { L_CORCHETE, LITERAL_CADENA });
@@ -148,113 +140,172 @@ public class Parser {
 	}
 
 	static void tagname(int[] synchset) {
-		//System.out.println("Metodo tagname");
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
-			switch (token.id) {
-			case LITERAL_CADENA:
-				match(LITERAL_CADENA);
-				break;
-			default:
-				System.out.println("Error de tagname");
-				error();
-			}
+			match(LITERAL_CADENA);
+		}
+		checkinput(synchset, new int[] { LITERAL_CADENA });
+	}
+
+	private static void aux(int[] synchset) {
+		// un caso especial son las funciones que pueden tomar vacio:
+		// es valido que venga la coma o que venga algo de su conjunto siguiente
+		checkinput(union(new int[] { COMA }, synchset), new int[] {});
+		if (!(in(synchset))) {
+			match(COMA);
+			aux2(new int[] { R_CORCHETE });
 			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
 	}
 
-	static void attributes(int[] synchset) {
-		//System.out.println("Metodo attributes");
+	private static void aux2(int[] synchset) {
+		checkinput(new int[] { L_LLAVE, L_CORCHETE, LITERAL_CADENA }, synchset);
+		if (!in(synchset)) {
+			switch (token.id) {
+			case L_LLAVE:
+				atributes(new int[] { COMA, R_CORCHETE });
+				aux3(new int[] { R_CORCHETE });
+				break;
+			case L_CORCHETE:
+				elementlist(new int[] { R_CORCHETE });
+				break;
+			case LITERAL_CADENA:
+				elementlist(new int[] { R_CORCHETE });// el corchete del element
+														// que le contiene
+				break;
+			default:
+				error();
+			}
+		}
+		checkinput(synchset, new int[] { L_LLAVE, L_CORCHETE, LITERAL_CADENA });
+	}
+
+	private static void atributes(int[] synchset) {
 		checkinput(new int[] { L_LLAVE }, synchset);
-		if (!(in(synchset))) {
+		if (!in(synchset)) {
 			switch (token.id) {
 			case L_LLAVE:
 				match(L_LLAVE);
-				attributeList(new int[] { COMA, R_LLAVE });
+				aux7(new int[] { R_LLAVE });
 				match(R_LLAVE);
 				break;
 			default:
-				// System.out.println("Error de attributes");
 				error();
 			}
-			checkinput(synchset, new int[] { L_LLAVE });
 		}
+		checkinput(synchset, new int[] { L_LLAVE });
 	}
 
-	static void attributeList(int[] synchset) {
-		//System.out.println("Metodo attributeList");
-		checkinput(new int[] { LITERAL_CADENA }, synchset);
+	private static void aux3(int[] synchset) {
+		checkinput(union(new int[] { COMA }, synchset), synchset);
 		if (!(in(synchset))) {
-			switch (token.id) {
-			case LITERAL_CADENA:
-				attribute(new int[] { COMA, R_LLAVE });
-				attribP(new int[] { COMA, R_LLAVE });
-				break;
-			default:
-				// System.out.println("Error de attributeList");
-				error();
-			}
-			checkinput(synchset, new int[] { LITERAL_CADENA });
-		}
-	}
-
-	static void attribP(int[] synchset) {
-		//System.out.println("Metodo attribP");
-		checkinput(union(new int[] { COMA }, synchset), new int[] {});
-		if (!(in(synchset))) {
-			switch (token.id) {
-			case COMA:
-				match(COMA);
-				attributeList(new int[] { COMA, R_LLAVE });
-				attribP(new int[] { COMA, R_LLAVE });
-				break;
-			}
+			match(COMA);
+			elementlist(new int[] { R_CORCHETE });
 			checkinput(synchset, new int[] { COMA });
 		}
 	}
 
-	static void attribute(int[] synchset) {
-		//System.out.println("Metodo attribute");
+	private static void elementlist(int[] synchset) {
+		checkinput(new int[] { L_CORCHETE, LITERAL_CADENA }, synchset);
+		if (!(in(synchset))) {
+			switch (token.id) {
+			case L_CORCHETE:
+				element(new int[] { COMA, R_CORCHETE });
+				aux5(new int[] { R_CORCHETE });
+				break;
+			case LITERAL_CADENA:
+				element(new int[] { COMA, R_CORCHETE });
+				aux5(new int[] { R_CORCHETE });
+				break;
+			default:
+				error();
+			}
+			checkinput(synchset, new int[] { L_CORCHETE, LITERAL_CADENA });
+		}
+	}
+
+	private static void aux7(int[] synchset) {
+		checkinput(union(new int[] { LITERAL_CADENA }, synchset), synchset);
+		if (!(in(synchset))) {
+			atributeslist(new int[] { R_LLAVE });
+			checkinput(synchset, new int[] { LITERAL_CADENA });
+		}
+	}
+
+	private static void atributeslist(int[] synchset) {
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
 			case LITERAL_CADENA:
-				attributeName(new int[] { DOS_PUNTOS });
-				match(DOS_PUNTOS);
-				attributeValue(new int[] { COMA, R_LLAVE });
+				atribute(new int[] { COMA, R_LLAVE });
+				aux4(new int[] { R_LLAVE });
 				break;
 			default:
-				// System.out.println("Error de attribute");
 				error();
 			}
 			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
 	}
 
-	static void attributeName(int[] synchset) {
-		//System.out.println("Metodo attributeName");
+	private static void aux5(int[] synchset) {
+		checkinput(union(new int[] { COMA }, synchset), synchset);
+		if (!(in(synchset))) {
+			match(COMA);
+			element(new int[] { COMA, R_CORCHETE });
+			aux5(new int[] { R_CORCHETE });
+			checkinput(synchset, new int[] { COMA });
+		}
+	}
+
+	private static void atribute(int[] synchset) {
 		checkinput(new int[] { LITERAL_CADENA }, synchset);
 		if (!(in(synchset))) {
-			if (token.id == LITERAL_CADENA) {
-				match(LITERAL_CADENA);
-			} else {
-				// System.out.println("Error de attributeName");
+			switch (token.id) {
+			case LITERAL_CADENA:
+				attribute_name(new int[] { DOS_PUNTOS });
+				match(DOS_PUNTOS);
+				attribute_value(new int[] { COMA, R_LLAVE });
+				break;
+			default:
 				error();
 			}
 			checkinput(synchset, new int[] { LITERAL_CADENA });
 		}
 	}
 
-	static void attributeValue(int[] synchset) {
-		//System.out.println("Metodo attributeValue");
+	private static void aux4(int[] synchset) {
+		checkinput(union(new int[] { COMA }, synchset), new int[] {});
+		if (!(in(synchset))) {
+			match(COMA);
+			atribute(new int[] { COMA, R_LLAVE });
+			aux4(new int[] { R_LLAVE });
+			checkinput(synchset, new int[] { COMA });
+		}
+	}
+
+	private static void attribute_name(int[] synchset) {
+		checkinput(new int[] { LITERAL_CADENA }, synchset);
+		if (!(in(synchset))) {
+			switch (token.id) {
+			case LITERAL_CADENA:
+				match(LITERAL_CADENA);
+				break;
+			default:
+				error();
+			}
+			checkinput(synchset, new int[] { LITERAL_CADENA });
+		}
+	}
+
+	private static void attribute_value(int[] synchset) {
 		checkinput(new int[] { LITERAL_CADENA, LITERAL_NUM, PR_TRUE, PR_FALSE, PR_NULL }, synchset);
 		if (!(in(synchset))) {
 			switch (token.id) {
-			case LITERAL_CADENA:
-				match(LITERAL_CADENA);
-				break;
 			case LITERAL_NUM:
 				match(LITERAL_NUM);
+				break;
+			case LITERAL_CADENA:
+				match(LITERAL_CADENA);
 				break;
 			case PR_TRUE:
 				match(PR_TRUE);
@@ -266,44 +317,9 @@ public class Parser {
 				match(PR_NULL);
 				break;
 			default:
-				// System.out.println("Error de attributeValue");
 				error();
 			}
 			checkinput(synchset, new int[] { LITERAL_CADENA, LITERAL_NUM, PR_TRUE, PR_FALSE, PR_NULL });
-		}
-	}
-
-	static void elementList(int[] synchset) {
-		//System.out.println("Metodo elementList");
-		checkinput(new int[] { L_CORCHETE, LITERAL_CADENA }, synchset);
-		if (!(in(synchset))) {
-			switch (token.id) {
-			case L_CORCHETE:
-				element(new int[] { COMA, R_CORCHETE });
-				eleListP(new int[] { R_CORCHETE });
-				break;
-			case LITERAL_CADENA:
-				element(new int[] { COMA, R_CORCHETE });
-				eleListP(new int[] { R_CORCHETE });
-				break;
-			default:
-				// System.out.println("Error de elementList");
-				error();
-			}
-			checkinput(synchset, new int[] { L_CORCHETE, LITERAL_CADENA });
-		}
-	}
-
-	static void eleListP(int[] synchset) {
-		//System.out.println("Metodo eleListP");
-		checkinput(union(new int[] { COMA }, synchset), new int[] {});
-		if (!(in(synchset))) {
-			if (token.id == COMA) {
-				match(COMA);
-				elementList(new int[] { R_CORCHETE });
-				eleListP(new int[] { R_CORCHETE });
-			}
-			checkinput(synchset, new int[] { COMA });
 		}
 	}
 }
