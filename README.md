@@ -1,3 +1,3 @@
 # Compiladores
 
-Analizador léxico y sintáctico para JsonML.
+Analizador léxico, sintáctico y traductor para JsonML.
