@@ -345,7 +345,7 @@ public class Parser {
 				match(PR_FALSE);
 				break;
 			case PR_NULL:
-				System.out.println("Debe matchear con PR_NULL");
+				//System.out.println("Debe matchear con PR_NULL");
 				match(PR_NULL);
 				break;
 			default:
