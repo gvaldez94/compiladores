@@ -414,7 +414,7 @@ public class Traductor {
                 case PR_NULL:
                     match(PR_NULL);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return " ";//attributeValue--> PR_NULL
+                    return "null";//attributeValue--> PR_NULL
                 default:
                     error();
             }
