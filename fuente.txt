@@ -11,7 +11,7 @@
     ]
   ],
   [ "sql",
-    { "id" : "select_all" , "nro" : 1 },
+    { "id" : "select_all" , "nro" : 1, "bool" : true },
     "select * from persona order by ci"
   ]
 ]
