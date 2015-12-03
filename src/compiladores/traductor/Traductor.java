@@ -397,7 +397,7 @@ public class Traductor {
                     cadena = token.lexema;
                     match(LITERAL_NUM);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return cadena;//attributeValue--> LITERAL_NUM
+                    return "\"" + cadena + "\"";//attributeValue--> LITERAL_NUM
                 case LITERAL_CADENA:
                     cadena = token.lexema;
                     match(LITERAL_CADENA);
@@ -406,15 +406,15 @@ public class Traductor {
                 case PR_TRUE:
                     match(PR_TRUE);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return "true";//attributeValue--> PR_TRUE
+                    return "\"true\"";//attributeValue--> PR_TRUE
                 case PR_FALSE:
                     match(PR_FALSE);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return "false";//attributeValue--> PR_FALSE
+                    return "\"false\"";//attributeValue--> PR_FALSE
                 case PR_NULL:
                     match(PR_NULL);
                     checkinput(synchset, new int[]{LITERAL_CADENA,LITERAL_NUM,PR_TRUE,PR_FALSE,PR_NULL});
-                    return "null";//attributeValue--> PR_NULL
+                    return "\"null\"";//attributeValue--> PR_NULL
                 default:
                     error();
             }
